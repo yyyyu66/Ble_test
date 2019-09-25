@@ -2,14 +2,22 @@ package com.example.ble_test;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.os.*;
 import android.bluetooth.*;
 import android.content.Intent;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +50,30 @@ public class MainActivity extends AppCompatActivity {
         MyBleList = findViewById(R.id.BLE_List);
         initData();
 
+        try {//test    ....................
+            //创建日志文件
+            //File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
+            File file = new File(getFilesDir(), "ble_log");//内部创建文件
+            Log.e(TAG, "File:"+ file);
+
+            File Extern_file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS), "ble_log");
+            if(!file.mkdirs()) {
+                Log.e(TAG, "Directory not created");
+            }else
+            {
+                Log.e(TAG, "Directory created:"+Extern_file);
+            }
+
+            String filename = "myfile";
+            String string = "Hello world!";
+            FileOutputStream outputStream;
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(string.getBytes());
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         if(mBluetoothAdapter == null)

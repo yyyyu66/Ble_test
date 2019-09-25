@@ -10,6 +10,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,6 +25,7 @@ public  class second extends AppCompatActivity {
     private Button   button_Disconnect;     //断开连接
     private Button   button_Connect;        //连接设备
 
+    private FileOutputStream fs_log;
     private Button   Btn_SaveLog;           //保存日志
     private Button   Btn_ClearLog;          //清空日志显示区
 
@@ -114,17 +116,15 @@ public  class second extends AppCompatActivity {
             }
         });//发送查询日志命令
 
-        //创建日志文件
-        File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
-        Log.e(TAG, "file:"+file);//文件操作
-        if(!file.exists())
-        {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            //创建日志文件
+            //File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
+            fs_log = openFileOutput("Ble_log.txt", Context.MODE_APPEND);
+            Log.e(TAG, "file:"+fs_log);//文件操作
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
         Btn_SaveLog.setOnClickListener(new View.OnClickListener() {
             @Override
