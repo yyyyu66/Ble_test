@@ -116,7 +116,7 @@ public  class second extends AppCompatActivity {
 
         //创建日志文件
         File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
-        Log.e(TAG, "file:"+file);
+        Log.e(TAG, "file:"+file);//文件操作
         if(!file.exists())
         {
             try {
