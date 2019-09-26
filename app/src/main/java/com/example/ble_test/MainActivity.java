@@ -2,21 +2,18 @@ package com.example.ble_test;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.content.pm.PackageManager;
 import android.os.*;
 import android.bluetooth.*;
 import android.content.Intent;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import android.app.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothGatt mBluetoothGatt;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE" };
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -49,49 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         MyBleList = findViewById(R.id.BLE_List);
         initData();
-
-        try {//test    ....................
-            //创建日志文件
-            //File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
-            File file = new File(getFilesDir(), "ble_log");//内部创建文件
-            Log.e(TAG, "File:"+ file);
-
-            File Extern_file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS), "ble_log");
-            if(!file.mkdirs()) {
-                Log.e(TAG, "Directory not created");
-            }else
-            {
-                Log.e(TAG, "Directory created:"+Extern_file);
-            }
-
-            String filename = "myfile";
-            String string = "Hello world!";
-            FileOutputStream outputStream;
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(string.getBytes());
-            outputStream.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if(mBluetoothAdapter == null)
-        {
-            Log.e(TAG, "No BluetoothAdapter...");
-            return;
-        }
-
-        if(!mBluetoothAdapter.isEnabled())
-        {
-            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(intent,0);
-        }
-        if (Build.VERSION.SDK_INT >= 23) {
-            requestPermissions(new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-            } else {
-            }
+        Get_Permissions();
     }
     /*
     **
@@ -103,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         pbSearchBle=findViewById(R.id.progressBar_Search);
         Nums = findViewById(R.id.textView_Num);
         btn = findViewById(R.id.button_scan);
-
 
         pbSearchBle.setVisibility(View.GONE);
         MyBleList.setAdapter(mAdapter);
@@ -131,6 +89,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void Get_Permissions()
+    {
+        //申请读写权限
+        if (ContextCompat.checkSelfPermission(MainActivity.this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+            Log.e(TAG, "申请文件操作权限...");
+        }else
+        {
+            Log.e(TAG, "已允许进行文件操作...");
+        }
+
+        //申请打开蓝牙
+        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if(mBluetoothAdapter == null)
+        {
+            Log.e(TAG, "No BluetoothAdapter...");
+            return;
+        }
+        if(!mBluetoothAdapter.isEnabled())
+        {
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent,0);
+        }
+        if (Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+        } else {
+        }
+    }
     /**
      * 停止扫描设备
      */
@@ -194,5 +183,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 };
+
+    public static void verifyStoragePermissions(Activity activity) {
+        try {
+            //检测是否有写的权限
+            int permission = ActivityCompat.checkSelfPermission(activity,
+                    "android.permission.WRITE_EXTERNAL_STORAGE");
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                // 没有写的权限，去申请写的权限，会弹出对话框
+                ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 

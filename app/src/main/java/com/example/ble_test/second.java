@@ -7,6 +7,8 @@ import android.util.Log;
 import android.content.Intent;
 import android.view.*;
 import android.widget.*;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
@@ -14,9 +16,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public  class second extends AppCompatActivity {
-    private static final String TAG ="Second_UI " ;
+    private static final String TAG ="Second_UI:" ;
     private EditText Cmd_Text;                //命令文本
     private Button   button_send;            //发送按键,查询日志命令
     private Button   button_send1;           //发送按键,查询NB信号命令
@@ -25,6 +28,7 @@ public  class second extends AppCompatActivity {
     private Button   button_Disconnect;     //断开连接
     private Button   button_Connect;        //连接设备
 
+    private File file;
     private FileOutputStream fs_log;
     private Button   Btn_SaveLog;           //保存日志
     private Button   Btn_ClearLog;          //清空日志显示区
@@ -54,42 +58,22 @@ public  class second extends AppCompatActivity {
     private UUID indicate_UUID_Service;
     private UUID indicate_UUID_Character;
     //private
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.second);
+        String e = Environment.getExternalStorageDirectory().getPath();
+        String f = getExternalFilesDir("Documents").getPath();
+        Log.i(TAG + "e: ", "Environment.getExternalStorageDirectory().getPath():----- " + e);
+        Log.i(TAG + "f: ", "getExternalFilesDir(\"Documents\").getPath():----- " + f);
+
         initSecondUI();
-
-        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-
+        Connect_Device();
         Log.e(TAG, "Hello Second UI...");
-        try {
-            Intent bleInfo = getIntent();
-            BleName     = bleInfo.getStringExtra(EXTRAS_DEVICE_NAME);
-            BleAddress  = bleInfo.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-            BLE_Name.setText("设备:"+BleName +","+BleAddress);
-            mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(BleAddress);//根据蓝牙地址获取蓝牙设备
-            /********连接设备*********/
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    mBluetoothGatt = mBluetoothDevice.connectGatt(second.this, true,
-                            gattCallBack, BluetoothDevice.TRANSPORT_LE);
-                } else {
-                    mBluetoothGatt = mBluetoothDevice.connectGatt(second.this, true,
-                            gattCallBack);
-                }
-            }catch (Exception ex)
-            {
-                Log.e(TAG, ex.toString());
-            }
-            Log.e(TAG ,"BleDevice:"+ BleName + BleAddress);
-        }catch(Exception ex) {
-            Log.e(TAG, ex.toString());
-            return;
-        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void initSecondUI()
     {
         button_send = findViewById(R.id.button_sendData1);
@@ -115,16 +99,6 @@ public  class second extends AppCompatActivity {
                 Log.e(TAG, "发送命令0003...");
             }
         });//发送查询日志命令
-
-        try {
-            //创建日志文件
-            //File file = new File(Environment.getExternalStorageState(),"Ble_log.txt");
-            fs_log = openFileOutput("Ble_log.txt", Context.MODE_APPEND);
-            Log.e(TAG, "file:"+fs_log);//文件操作
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
         Btn_SaveLog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,9 +150,9 @@ public  class second extends AppCompatActivity {
         });//蓝牙连接
     }
 
-    /*
+    /**********************************************************************************
      **监测蓝牙状态的变化
-     */
+     *********************************************************************************/
     private final BluetoothGattCallback gattCallBack = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -371,5 +345,46 @@ public  class second extends AppCompatActivity {
         }
     }
 
+    /************************创建日志文件**********************************/
+    private void Creat_LogFile(String filename){
+            try {
+                //创建日志文件
+                file = new File(Environment.getExternalStorageDirectory().getPath(),filename+".txt");
+                fs_log = openFileOutput(filename+".txt", Context.MODE_APPEND);
+                byte[] buffer =  (BleName +","+ BleAddress+"的日志").getBytes();
+                fs_log.write(buffer);
+                fs_log.flush();
+                Log.e(TAG, "file:"+file);//文件操作
+            } catch (IOException e) {
+                Log.e("Error:", e.toString());//文件操作
+            }
+        }
 
+    /****进入后直接连接设备****/
+    private void Connect_Device()
+    {
+        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        try {
+            Intent bleInfo = getIntent();
+            BleName     = bleInfo.getStringExtra(EXTRAS_DEVICE_NAME);
+            BleAddress  = bleInfo.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+            BLE_Name.setText("设备:"+BleName +","+BleAddress);
+            mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(BleAddress);//根据蓝牙地址获取蓝牙设备
+            /********连接设备*********/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mBluetoothGatt = mBluetoothDevice.connectGatt(second.this, true,
+                        gattCallBack, BluetoothDevice.TRANSPORT_LE);
+            } else {
+                mBluetoothGatt = mBluetoothDevice.connectGatt(second.this, true,
+                        gattCallBack);
+            }
+            Log.e(TAG ,"BleDevice:"+ BleName + BleAddress);
+            Creat_LogFile(BleName);
+
+        }catch(Exception ex) {
+            Log.e(TAG, ex.toString());
+            return;
+        }
+    }
 }
