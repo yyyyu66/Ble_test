@@ -1,7 +1,6 @@
 package com.example.ble_test;
 
 import android.bluetooth.*;
-import android.content.Context;
 import android.os.*;
 import android.util.Log;
 import android.content.Intent;
@@ -11,12 +10,12 @@ import android.widget.*;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public  class second extends AppCompatActivity {
     private static final String TAG ="Second_UI:" ;
@@ -28,7 +27,7 @@ public  class second extends AppCompatActivity {
     private Button   button_Disconnect;     //断开连接
     private Button   button_Connect;        //连接设备
 
-    private File file;
+    File file;
     private FileOutputStream fs_log;
     private Button   Btn_SaveLog;           //保存日志
     private Button   Btn_ClearLog;          //清空日志显示区
@@ -63,11 +62,7 @@ public  class second extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.second);
-        String e = Environment.getExternalStorageDirectory().getPath();
-        String f = getExternalFilesDir("Documents").getPath();
-        Log.i(TAG + "e: ", "Environment.getExternalStorageDirectory().getPath():----- " + e);
-        Log.i(TAG + "f: ", "getExternalFilesDir(\"Documents\").getPath():----- " + f);
-
+        getFilePath();
         initSecondUI();
         Connect_Device();
         Log.e(TAG, "Hello Second UI...");
@@ -91,23 +86,32 @@ public  class second extends AppCompatActivity {
         BLE_State = findViewById(R.id.textView_State);
         BLE_Connecting = findViewById(R.id.progressBar_Connect);
 
-        //重写OnClick
+        //发送查询日志命令
         button_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 second.this.writeDataToBleDevcie("0003");
                 Log.e(TAG, "发送命令0003...");
             }
-        });//发送查询日志命令
+        });
 
+        //保存日志
         Btn_SaveLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-                Log.e(TAG, "保存日志...");
+                try{
+                    Log.e(TAG,"save logs");
+                    String infos = BLE_DeviceLog.getText().toString();
+                    BufferedWriter BW = null;
+                    BW = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
+                    BW.write(infos);
+                    BW.close();
+                }catch(Exception ex)
+                {
+                    Log.e(TAG, ex.toString());
+                }
             }
-        });//保存日志
+        });
 
         Btn_ClearLog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,22 +349,31 @@ public  class second extends AppCompatActivity {
         }
     }
 
-    /************************创建日志文件**********************************/
-    private void Creat_LogFile(String filename){
-            try {
-                //创建日志文件
-                file = new File(Environment.getExternalStorageDirectory().getPath(),filename+".txt");
-                fs_log = openFileOutput(filename+".txt", Context.MODE_APPEND);
-                byte[] buffer =  (BleName +","+ BleAddress+"的日志").getBytes();
+    /***************************创建日志文件********************************/
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void Creat_LogFile(String filename)
+    {
+        try{
+            file = new File(getExternalFilesDir("Documents").getPath(), filename+".txt");
+            if(file.exists())
+            {
+                Log.e(TAG,"file exists:"+file);
+            }else
+            {
+                fs_log = new FileOutputStream(String.valueOf(file));
+                byte[] buffer =  (BleName +","+ BleAddress+"的日志" + "\r\n").getBytes();
                 fs_log.write(buffer);
                 fs_log.flush();
-                Log.e(TAG, "file:"+file);//文件操作
-            } catch (IOException e) {
-                Log.e("Error:", e.toString());//文件操作
+                fs_log.close();
             }
-        }
+        }catch(Exception ex)
+        {
+            Log.i(TAG, ex.toString());
+        };
+    }
 
-    /****进入后直接连接设备****/
+    /************************************进入后直接连接设备************************************/
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void Connect_Device()
     {
         mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -371,7 +384,6 @@ public  class second extends AppCompatActivity {
             BleAddress  = bleInfo.getStringExtra(EXTRAS_DEVICE_ADDRESS);
             BLE_Name.setText("设备:"+BleName +","+BleAddress);
             mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(BleAddress);//根据蓝牙地址获取蓝牙设备
-            /********连接设备*********/
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mBluetoothGatt = mBluetoothDevice.connectGatt(second.this, true,
                         gattCallBack, BluetoothDevice.TRANSPORT_LE);
@@ -381,10 +393,29 @@ public  class second extends AppCompatActivity {
             }
             Log.e(TAG ,"BleDevice:"+ BleName + BleAddress);
             Creat_LogFile(BleName);
-
         }catch(Exception ex) {
             Log.e(TAG, ex.toString());
             return;
         }
     }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void getFilePath() {
+        String a = Environment.getDataDirectory().toString();
+        String b = getFilesDir().getAbsolutePath();
+        String c = getCacheDir().getAbsolutePath();
+        String d = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
+        String e = Environment.getExternalStorageDirectory().getPath();
+        String f = getExternalFilesDir("Documents").getPath();
+        String g = this.getFilesDir().getPath()+"//";
+        Log.i(TAG + "a: ", "Environment.getDataDirectory().toString():-----" + a);
+        Log.i(TAG + "b: ", "getFilesDir().getAbsolutePath():----- " + b);
+        Log.i(TAG + "c: ", "getCacheDir().getAbsolutePath():----- " + c);
+        Log.i(TAG + "d: ", "Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath():----- " + d);
+        Log.i(TAG + "e: ", "Environment.getExternalStorageDirectory().getPath():----- " + e);
+        Log.i(TAG + "f: ", "getExternalFilesDir(\"Documents\").getPath():----- " + f);
+        Log.i(TAG + "g: ", "getFilesDir().getPath():----- " + g);
+    }
+
 }
