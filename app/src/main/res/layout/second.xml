@@ -20,36 +20,23 @@
 
     <Button
         android:id="@+id/button_ClearLog"
-        android:layout_width="64dp"
-        android:layout_height="22dp"
-        android:layout_marginEnd="11dp"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
         android:background="#E1F5FE"
-        android:text="清空"
+        android:text="清空日志"
         android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent" />
+        tools:layout_editor_absoluteX="339dp"
+        tools:layout_editor_absoluteY="103dp" />
 
     <Button
         android:id="@+id/button_SaveLog"
-        android:layout_width="64dp"
-        android:layout_height="22dp"
-        android:layout_marginEnd="27dp"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
         android:background="#E1F5FE"
         android:text="保存日志"
         android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toStartOf="@+id/button_ClearLog" />
-
-    <Button
-        android:id="@+id/button_Disconnect"
-        android:layout_width="80dp"
-        android:layout_height="37dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="38dp"
-        android:text="断开连接"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent" />
+        tools:layout_editor_absoluteX="275dp"
+        tools:layout_editor_absoluteY="103dp" />
 
     <Button
         android:id="@+id/button_sendData1"
@@ -101,28 +88,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_GetKeys" />
 
-    <ProgressBar
-        android:id="@+id/progressBar_Connect"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="30dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="118dp"
-        android:layout_marginBottom="41dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toStartOf="@+id/button_Connect"
-        app:layout_constraintTop_toBottomOf="@+id/textView_BLEMAC" />
-
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="390dp"
         android:layout_height="226dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="11dp"
-        android:layout_marginBottom="21dp"
+        android:layout_marginBottom="28dp"
         android:background="#A5E6AA"
         app:layout_constraintBottom_toTopOf="@+id/textView_response"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
@@ -156,45 +132,23 @@
 
     <TextView
         android:id="@+id/textView_DeviceLog"
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="150dp"
+        android:gravity="center_horizontal"
         android:text="设备运行日志"
         android:textColor="#EC407A"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toStartOf="@+id/button_SaveLog"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="10sp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="109dp" />
 
     <TextView
         android:id="@+id/textView_BLEMAC"
         android:layout_width="390dp"
         android:layout_height="28dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="11dp"
-        android:layout_marginBottom="12dp"
         android:text="设备"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_Disconnect"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView_State"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="21dp"
-        android:text="连接中"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView_DeviceLog"
-        app:layout_constraintEnd_toStartOf="@+id/progressBar_Connect"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_BLEMAC" />
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <TextView
         android:id="@+id/textView_response"
@@ -209,14 +163,41 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:id="@+id/button_Disconnect"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
+        android:background="#C09F6C"
+        android:text="断开连接"
+        android:textSize="10sp"
+        tools:layout_editor_absoluteX="243dp"
+        tools:layout_editor_absoluteY="44dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar_Connect"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        tools:layout_editor_absoluteX="219dp"
+        tools:layout_editor_absoluteY="88dp" />
+
+    <TextView
+        android:id="@+id/textView_State"
+        android:layout_width="40dp"
+        android:layout_height="20dp"
+        android:gravity="center_horizontal"
+        android:text="连接中"
+        android:textSize="10sp"
+        tools:layout_editor_absoluteX="263dp"
+        tools:layout_editor_absoluteY="82dp" />
+
+    <Button
         android:id="@+id/button_Connect"
-        android:layout_width="71dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="40dp"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
+        android:background="#C09F6C"
         android:text="连接设备"
         android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toStartOf="@+id/button_Disconnect" />
+        tools:layout_editor_absoluteX="331dp"
+        tools:layout_editor_absoluteY="44dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
