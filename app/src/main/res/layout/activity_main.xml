@@ -8,11 +8,12 @@
 
     <Button
         android:id="@+id/button_scan"
-        android:layout_width="105dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="39dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="86dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="11dp"
+        android:background="@color/colorPrimary"
         android:onClick="scanDevice"
         android:text="搜索设备"
         android:textColor="#5E35B1"
@@ -23,57 +24,61 @@
 
     <ListView
         android:id="@+id/BLE_List"
-        android:layout_width="381dp"
-        android:layout_height="652dp"
+        android:layout_width="403dp"
+        android:layout_height="665dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="9dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:background="#D9DDB2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" >
+
+    </ListView>
+
+    <ProgressBar
+        android:id="@+id/progressBar_Search"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="30dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="39dp"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/BLE_List"
+        app:layout_constraintEnd_toStartOf="@+id/button_scan"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="77dp"
         android:layout_height="25dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="51dp"
-        android:layout_marginBottom="38dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="17dp"
+        android:layout_marginBottom="17dp"
         android:text="设备列表"
         android:textColor="#8E24AA"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/BLE_List"
+        app:layout_constraintEnd_toStartOf="@+id/textView_Num"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView_Num"
-        android:layout_width="38dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="51dp"
-        android:layout_marginBottom="44dp"
-        android:text="共0个"
-        android:textColor="#1E88E5"
-        app:layout_constraintBottom_toTopOf="@+id/BLE_List"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/progressBar_Search"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="38dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="33dp"
+        android:layout_width="68dp"
+        android:layout_height="26dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="34dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginEnd="85dp"
+        android:layout_marginBottom="16dp"
+        android:text="共0个"
+        android:textAlignment="center"
+        android:textColor="#1E88E5"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/BLE_List"
-        app:layout_constraintEnd_toStartOf="@+id/button_scan"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toEndOf="@+id/textView_Num"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toStartOf="@+id/progressBar_Search"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

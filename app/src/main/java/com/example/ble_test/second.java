@@ -31,7 +31,7 @@ public  class second extends AppCompatActivity {
     private FileOutputStream fs_log;
     private Button   Btn_SaveLog;           //保存日志
     private Button   Btn_ClearLog;          //清空日志显示区
-
+    private Button   Btn_ClearSendLog;      //清空日志显示区
     private TextView SendLog;               //蓝牙接收的内容
     private TextView BLE_Name;              //蓝牙设备信息：名称和MAC
     private TextView BLE_State;             //蓝牙状态
@@ -79,6 +79,7 @@ public  class second extends AppCompatActivity {
         Btn_ClearLog = findViewById(R.id.button_ClearLog);
         button_Disconnect = findViewById(R.id.button_Disconnect);
         button_Connect = findViewById(R.id.button_Connect);
+        Btn_ClearSendLog = findViewById(R.id.button_ClearSendLog);
 
         SendLog = findViewById(R.id.textView_LogRes);
         BLE_DeviceLog = findViewById(R.id.textView_LogInfo);//显示设备的日志信息
@@ -119,13 +120,29 @@ public  class second extends AppCompatActivity {
                 BLE_DeviceLog.setText(null);
                 Log.e(TAG, "清空日志显示区...");
             }
-        });//清空日志显示区
+        });
+
+        Btn_ClearSendLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendLog.setText(null);
+                Log.e(TAG, "清空命令发送区...");
+            }
+        });
 
         button_send1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                second.this.writeDataToBleDevcie("0001");
+                second.this.writeDataToBleDevcie("0004");
                 Log.e(TAG, "发送命令0001...");
+            }
+        });//发送查询日志命令
+
+        button_send2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                second.this.writeDataToBleDevcie("0001");
+                Log.e(TAG, "发送命令0004...");
             }
         });//发送查询日志命令
 
@@ -221,13 +238,15 @@ public  class second extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String Valid_info = str.substring(8, str.length());
+                            String Valid_info = str.substring(7, str.length());
                             if (str.length() > 4) {
                                 long tmp = 0;
                                 for(int i = 0; i < 4; i++)
                                 {
-                                    if(value[4+i] > 0)    tmp += (value[4+i] << (24-8*i));
-                                    else                  tmp += ((256+value[4+i]) << (24-8*i));
+                                    if(value[4+i] > 0)
+                                        tmp += (value[4+i] << (24-8*i));
+                                    else
+                                        tmp += ((256+value[4+i]) << (24-8*i));
                                 }
                                 Log.e(TAG, "Received:" + tmp);
                                 long timestamp = tmp * 1000L;
@@ -343,7 +362,9 @@ public  class second extends AppCompatActivity {
             Log.e(TAG,write_UUID_Service.toString() + write_UUID_Character.toString());
             charaWrite.setValue(cmd);
             mBluetoothGatt.writeCharacteristic(charaWrite);
-            SendLog.append(cmd);
+            Date date = new Date();
+            String time = date.toLocaleString();
+            SendLog.append(time+" "+cmd+"\n");
         }catch(Exception ex){
             ex.printStackTrace();
         }

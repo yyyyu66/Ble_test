@@ -13,23 +13,24 @@ import android.view.*;
 import android.widget.*;
 import android.app.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
+import com.example.ble_test.BleAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG ="ble_tag" ;
-    private List<BluetoothDevice> mDatas;
+    private List<BluetoothDevice> mDatas;           //蓝牙设备
     private List<Integer> mRssis;                   //信号强度
     private ListView MyBleList;                    //蓝牙信息列表
-    private ListView testList;
+    private ArrayAdapter mAdapter;
     private TextView Nums;
     private Button btn;
     private List mList;
     private ProgressBar pbSearchBle;
     private static int BleNum = 0;
 
-    private ArrayAdapter mAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothManager mBluetoothManager;
     private boolean isScaning=false;
@@ -58,14 +59,15 @@ public class MainActivity extends AppCompatActivity {
     private void initData(){
         mRssis = new ArrayList<>();
         mDatas = new ArrayList<>(); //设备地址信息
-        mAdapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, mDatas);
+        //mAdapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, mDatas);
+        mAdapter = new ArrayAdapter(this,android.R.layout.simple_expandable_list_item_1, mDatas);
+        MyBleList.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();//刷新数据
         pbSearchBle=findViewById(R.id.progressBar_Search);
         Nums = findViewById(R.id.textView_Num);
         btn = findViewById(R.id.button_scan);
-
         pbSearchBle.setVisibility(View.GONE);
-        MyBleList.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();//刷新数据
+
 
         /****重写监听事件****/
         MyBleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -125,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void stopScanDevice(){
         isScaning = false;
+        BleNum = 0;
         pbSearchBle.setVisibility(View.GONE);
         mBluetoothAdapter.stopLeScan(scanCallback);
     }
@@ -166,14 +169,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
         Log.e(TAG, "run: scaning...");
-        Log.e(TAG, "devcie:" + device);
-        Log.e(TAG, "mm" + mDatas.toString());
+        Log.e(TAG, "devcie:" + device.getName()+ " "+ rssi);
+        //Log.e(TAG, "mm:" + mDatas.toString());
         try {
             if (!mDatas.contains(device)) {
                 Log.e(TAG, "exist");
                 BleNum++;
                 Nums.setText("共"+BleNum+"个");
                 mDatas.add(device);
+                String name = device.getName();
+                if(name == null)
+                    name = "Unknow Device";
                 mRssis.add(rssi);
                 MyBleList.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();//刷新数据
